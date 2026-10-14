@@ -1,0 +1,28 @@
+{
+  "name": "gim-server",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mock delivery and authentication service for MLS end-to-end encrypted IM clients",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "openapi": "bun scripts/gen-openapi.ts"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "1.6.3",
+    "@scalar/hono-api-reference": "0.12.12",
+    "hono": "4.13.13",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "9.5.1",
+    "@types/bun": "1.4.3",
+    "eslint": "10.12.0",
+    "typescript": "6.0.3"
+  }
+}
