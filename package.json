@@ -11,7 +11,8 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "openapi": "bun scripts/gen-openapi.ts"
+    "openapi": "bun scripts/gen-openapi.ts",
+    "seed": "bun scripts/seed.ts"
   },
   "dependencies": {
     "@hono/zod-openapi": "1.6.3",
