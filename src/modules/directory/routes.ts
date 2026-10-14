@@ -1,17 +1,42 @@
 import type { App, AppDeps } from '../../shared/context'
-import { notImplemented } from '../../shared/errors'
+import { notFound } from '../../shared/errors'
 import { findUserByHandleRoute, getUserRoute, listUserDevicesRoute } from './schemas'
 
-export function register(app: App, _deps: AppDeps): void {
-  app.openapi(findUserByHandleRoute, () => {
-    throw notImplemented()
+interface UserRow {
+  user_id: string
+  handle: string
+  display_name: string
+}
+
+export function register(app: App, { db }: AppDeps): void {
+  const userBy = (column: 'id' | 'handle', value: string) =>
+    db
+      .query<UserRow, [string]>(`SELECT id AS user_id, handle, display_name FROM users WHERE ${column} = ?`)
+      .get(value)
+
+  app.openapi(findUserByHandleRoute, (c) => {
+    const user = userBy('handle', c.req.valid('query').handle)
+    if (!user)
+      throw notFound('User')
+    return c.json(user, 200)
   })
 
-  app.openapi(getUserRoute, () => {
-    throw notImplemented()
+  app.openapi(getUserRoute, (c) => {
+    const user = userBy('id', c.req.valid('param').user_id)
+    if (!user)
+      throw notFound('User')
+    return c.json(user, 200)
   })
 
-  app.openapi(listUserDevicesRoute, () => {
-    throw notImplemented()
+  app.openapi(listUserDevicesRoute, (c) => {
+    const { user_id } = c.req.valid('param')
+    if (!userBy('id', user_id))
+      throw notFound('User')
+    const devices = db
+      .query<{ device_id: string, created_at: number }, [string]>(
+        'SELECT id AS device_id, created_at FROM devices WHERE user_id = ? ORDER BY created_at, rowid',
+      )
+      .all(user_id)
+    return c.json({ devices }, 200)
   })
 }
